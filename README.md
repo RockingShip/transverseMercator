@@ -1,16 +1,16 @@
 # Welcome to Ellipsoidal Transverse Mercator Projection (Javascript)
 
-The nicest about this projection is that Antarctica is correct in proportions.
+The nicest about this projection is that Antarctica is correct in proportions. And unlike UTM, it is has no zones.
 
 ![Elliptic Transverse Mercator](transverseMercator-480x480@15.gif)
 
 This project is a Javascript port of [TransverseMercatorProj](https://geographiclib.sourceforge.io/html/TransverseMercatorProj.1.html) from the [`geographiclib`](https://geographiclib.sourceforge.io) (https://geographiclib.sourceforge.io) project.
-Originally created and inspired by Charles Karney.
+Originally created by Charles Karney.
 
 ## Installation
 
 ```bash
-$ npm install canvas
+$ npm install transverseMercator
 ```
 
 ## Example

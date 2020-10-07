@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<!--
+    preview.html
+
+        Interactive demonstration displaying effects of setting lon0/k0/a/f
+-->
+<!--
+ *  This file is part of transverseMercator, Ellipsoidal Transverse Mercator Projection
+ *  Copyright (C) 2020, xyzzy@rockingship.org
+ *
+ * ISC License
+ *
+ * Copyright (c) 2020, xyzzy@rockingship.org
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Ellipsoidal Transverse Mercator Projection</title>
+	<script src="MooTools-Core-1.6.0.js" type="text/javascript"></script>
+	<script src="MooTools-More-1.6.0.js" type="text/javascript"></script>
+	<script type="text/javascript"> let module = {}; </script>
+	<script src="transverseMercator.js" type="text/javascript"></script>
+	<style type="text/css">
+		body {
+			font-family: Verdana, Geneva, sans-serif;
+		}
+		h1, h2, h3, h4, h5 {
+			text-align: center;
+		}
+		div {
+			position: relative;
+		}
+		svg {
+			background-color: #00000000; /* NOTE: alpha=0 */
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		canvas {
+			position: absolute;
+			z-index: -1;
+		}
+		.slider {
+			background: #CCC;
+			height: 16px;
+			width: 500px;
+			position: relative;
+			display: inline-block;
+		}
+		.knob {
+			background: #000;
+			width: 16px;
+			height: 16px;
+		}
+		.bonk {
+			background: #888;
+			width: 16px;
+			height: 16px;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	</style>
+</head>
+<body>
+<h3>Ellipsoidal Transverse Mercator Projection</h3>
+
+<div>
+	<div id="sliderLon0" class="slider">
+		<div id="knobLon0" class="knob"></div>
+	</div>
+	lon0=<span id="txtLon0"></span> (central meridian)
+</div>
+<div>
+	<div id="sliderK0" class="slider">
+		<div id="knobK0" class="knob"></div>
+	</div>
+	k0=<span id="txtK0"></span> (scale on the central meridian)
+</div>
+<div>
+	<div id="sliderA" class="slider">
+		<div id="knobA" class="knob"></div>
+	</div>
+	a=<span id="txtA"></span> (the ellipsoid via the equatorial radius)
+</div>
+<div>
+	<div id="sliderF" class="slider">
+		<div id="knobF" class="knob"></div>
+	</div>
+	f=<span id="txtF"></span> (the ellipsoid via the equatorial flattening)
+</div>
+
+<div id="wrapper">
+	<canvas id="animated" width="500" height="500"></canvas>
+</div>
+<div id="txtStatus"></div>
+<div id="txt2"></div>
+<div id="txt3"></div>
+<div id="txt4"></div>
+
+<img id="rawimg" src="geodata-500x500.png" alt="DATA" style="display:none">
+
+<script type="text/javascript">
+	"use strict";
+
+	function draw(ctx, tm, lon0, width, height, rawData) {
+
+		const stime = Date.now();
+		let tmCount = 0;
+
+		// erase canvas
+		ctx.fillStyle = "#fff"
+		ctx.fillRect(0, 0, width, height)
+
+		// draw guidelines first as background
+		ctx.strokeStyle = "#0f0";
+		ctx.fillStyle = "#0f0"
+
+		/*
+		 * The "*0.95" is to create a border
+		 */
+
+		/*
+		 * draw horizontal guides
+		 */
+		for (let lat = -90 + 15; lat <= +90 - 15; lat += 15) {
+			let iLat = Math.round(lat / 15);
+
+			for (let lon = -180; lon <= +180; lon += .2) {
+				let {x, y} = tm.toXY(lat, lon, lon0);
+				++tmCount;
+
+				// change sign latitude for drawing
+				y = -y;
+
+				// convert geodesic x/y to screen x/y
+				x = Math.round((x / 26e6 / 2 + 0.5) * width * 0.95);
+				y = Math.round((y / 20e6 / 2 + 0.5) * height * 0.95);
+
+				ctx.fillRect(x, y, 1, 1);
+			}
+		}
+
+		/*
+		 * draw vertical guides
+		 */
+		for (let lon = -180; lon <= +180; lon += 15) {
+			let latEdge;
+			if ((lon + 180) % 60 === 0)
+				latEdge = 0;
+			else if ((lon + 180) % 30 === 0)
+				latEdge = 15;
+			else
+				latEdge = 30;
+
+			for (let lat = -90 + latEdge; lat <= +90 - latEdge; lat += .2) {
+				let {x, y} = tm.toXY(lat, lon, lon0);
+				++tmCount;
+
+				// change sign latitude for drawing
+				y = -y;
+
+				// convert geodesic x/y to screen x/y
+				x = Math.round((x / 26e6 / 2 + 0.5) * width * 0.95);
+				y = Math.round((y / 20e6 / 2 + 0.5) * height * 0.95);
+
+				ctx.fillRect(x, y, 1, 1);
+			}
+		}
+
+		/*
+		 * display shapes
+		 */
+		let count = 0;
+		if (rawData) {
+			const {width: rawWidth, height: rawHeight, data: rawRGB} = rawData;
+
+			ctx.strokeStyle = '#000';
+			ctx.fillStyle = '#000'
+
+			// count set pixels
+			let k = 0;
+			for (let j = 0; j < rawHeight; ++j) {
+				for (let i = 0; i < rawWidth; ++i) {
+					if (!rawRGB[k]) {
+						// convert i/j into lat/lon
+						let lat = (j / rawHeight - 0.5) * 90 * 2;
+						let lon = (i / rawWidth - 0.5) * 180 * 2;
+
+						// convert lat/lon to geodesic x/y
+						let {x, y} = tm.toXY(lat, lon, lon0);
+						++tmCount;
+
+						// convert geodesic x/y to screen x/y
+						x = Math.round((x / 26e6 / 2 + 0.5) * width * 0.95);
+						y = Math.round((y / 20e6 / 2 + 0.5) * height * 0.95);
+						ctx.fillRect(x, y, 1, 1);
+					}
+					k += 4;
+				}
+			}
+		}
+
+		const etime = Date.now();
+
+		document.id("txtStatus").set("text", tmCount+" conversions. "+Math.round(tmCount/(etime-stime)*1000)+" per second");
+		// document.id("txt4").set("text", count3);
+	}
+
+	window.addEvent("domready", function () {
+
+		/*
+		 * Create UI
+		 */
+
+		const wrapper = document.id("wrapper");
+		const canvas = document.id("animated");
+		const ctx = canvas.getContext("2d");
+		let tm = undefined;
+
+		let width = canvas.width;
+		let height = canvas.height;
+		wrapper.setStyle("width", width);
+		wrapper.setStyle("height", height);
+
+		// hidden image containing coordinate data
+		const rawImg = document.id("rawimg");
+		const rawCanvas = document.createElement("canvas");
+		let rawCtx = undefined;
+		let rawData = undefined;
+
+		let tmLon0 = 0;
+		let tmK0 = 1;
+		let tmA = 6378137;
+		let tmF = 0.01; // (1 / 298.257223563);
+
+		/*
+		 * Sliders
+		 */
+		const sliderLon0 = new Slider("sliderLon0", "knobLon0", {
+			range: [-360, +360],
+			wheel: false,
+			snap: true,
+			onTick: function (pos) {
+				this.knob.setStyle(this.property, pos);
+			},
+			onChange: function (step) {
+				document.id("txtLon0").set("text", step)
+				tmLon0 = step;
+				if (tm)
+					draw(ctx, tm, tmLon0, width, height, rawData);
+			}
+		});
+		const sliderK0 = new Slider("sliderK0", "knobK0", {
+			range: [0, 10],
+			wheel: false,
+			snap: true,
+			onTick: function (pos) {
+				this.knob.setStyle(this.property, pos);
+			},
+			onChange: function (step) {
+				document.id("txtK0").set("text", step)
+				tmK0 = step;
+				if (tm) {
+					tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
+					draw(ctx, tm, tmLon0, width, height, rawData);
+				}
+			}
+		});
+		const sliderA = new Slider("sliderA", "knobA", {
+			range: [0, 7000000],
+			wheel: false,
+			snap: false,
+			onTick: function (pos) {
+				this.knob.setStyle(this.property, pos);
+			},
+			onChange: function (step) {
+				document.id("txtA").set("text", step)
+				tmA = step;
+				if (tm) {
+					tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
+					draw(ctx, tm, tmLon0, width, height, rawData);
+				}
+			}
+		});
+		const sliderF = new Slider("sliderF", "knobF", {
+			range: [0, 0.5],
+			wheel: false,
+			snap: false,
+			onTick: function (pos) {
+				this.knob.setStyle(this.property, pos);
+			},
+			onChange: function (step) {
+				document.id("txtF").set("text", step)
+				tmF = step;
+				if (tm) {
+					tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
+					draw(ctx, tm, tmLon0, width, height, rawData);
+				}
+			}
+		});
+		sliderLon0.set(tmLon0);
+		sliderK0.set(tmK0);
+		sliderA.set(tmA);
+		sliderF.set(tmF);
+
+		// create the converter *AFTER* sliders have initialised
+		tm = new module.exports.TransverseMercator();
+
+		/*
+		 * load data image containing contour coordinates
+		 */
+		function imgLoaded() {
+			try {
+				// Set width and height
+				rawCtx = rawCanvas.getContext("2d");
+				rawCanvas.width = rawImg.width;
+				rawCanvas.height = rawImg.height;
+
+				// Draw the image onto the internal canvas
+				rawCtx.drawImage(rawImg, 0, 0);
+
+				rawData = rawCtx.getImageData(0, 0, rawImg.width, rawImg.height);
+				console.log(JSON.stringify({id: "loaded", width: rawImg.width, height: rawImg.height}));
+
+				// Sometimes the data gets corrupted
+
+				// count set pixels
+				let k = 0;
+				let numBlack=0, numWhite = 0;
+				const rawRGB = rawData.data;
+
+				for (let ji = rawImg.width*rawImg.height-1; ji>=0; --ji) {
+					if (!rawRGB[k])
+						++numBlack;
+					else
+						++numWhite;
+					k += 4;
+				}
+
+				if (numBlack === 0 || numWhite===0)
+					rawData = undefined; // data was corrupted
+			} catch (e) {
+				console.log(e);
+				rawData = undefined;
+			}
+
+			// initial draw
+			draw(ctx, tm, tmLon0, width, height, rawData);
+		}
+
+		if (rawImg.naturalWidth) {
+			imgLoaded()
+		} else {
+			console.log("wait");
+			rawImg.addEventListener("load", function (event) {
+				imgLoaded()
+			});
+		}
+
+	});
+</script>
+
+</body>
+</html>

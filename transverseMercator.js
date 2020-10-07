@@ -1,6 +1,6 @@
 /*
  *  This file is part of transverseMercator, Ellipsoidal Transverse Mercator Projection
- *  Copyright (C) 2012, xyzzy@rockingship.org
+ *  Copyright (C) 2020, xyzzy@rockingship.org
  *
  * ISC License
  *
@@ -587,9 +587,9 @@ function TransverseMercator(k0, a, f, extend) {
 	this.tol_ = Number.EPSILON;
 	this.tol2_ = 0.1 * this.tol_;
 	this.taytol_ = Math.pow(this.tol_, 0.6);
-	this._a = (a !== undefined) ? a : this.WGS84_a();
-	this._f = (f !== undefined) ? f : this.WGS84_f();
-	this._k0 = (k0 !== undefined) ? k0 : this.UTM_k0();
+	this._a = (a) ? a : this.WGS84_a();
+	this._f = (f) ? f : this.WGS84_f();
+	this._k0 = (k0) ? k0 : this.UTM_k0();
 	this._mu = this._f * (2 - this._f);
 	this._mv = 1 - this._mu;
 	this._e = Math.sqrt(this._mu);
