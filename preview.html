@@ -54,25 +54,51 @@
 			position: absolute;
 			z-index: -1;
 		}
-		.slider {
-			background: #CCC;
-			height: 16px;
-			width: 500px;
-			position: relative;
+
+		/*
+		 * taken from https://www.w3schools.com/howto/howto_js_rangeslider.asp
+		 */
+		.slidecontainer {
+			width: 500px; /* Width of the outside container */
 			display: inline-block;
 		}
-		.knob {
-			background: #000;
-			width: 16px;
-			height: 16px;
+
+		/* The slider itself */
+		.slider {
+			-webkit-appearance: none; /* Override default CSS styles */
+			appearance: none;
+			width: 100%; /* Full-width */
+			height: 25px; /* Specified height */
+			border-radius: 5px;
+			background: #ddd; /* Grey background */
+			outline: none; /* Remove outline */
+			opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+			-webkit-transition: .2s; /* 0.2 seconds transition on hover */
+			transition: opacity .2s;
 		}
-		.bonk {
-			background: #888;
-			width: 16px;
-			height: 16px;
-			position: absolute;
-			top: 0;
-			left: 0;
+
+		/* Mouse-over effects */
+		.slider:hover {
+			opacity: 1; /* Fully shown on mouse-over */
+		}
+
+		/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+		.slider::-webkit-slider-thumb {
+			-webkit-appearance: none; /* Override default look */
+			appearance: none;
+			width: 25px; /* Set a specific slider handle width */
+			height: 25px; /* Slider handle height */
+			border-radius: 50%;
+			background: #000; /* Green background */
+			cursor: pointer; /* Cursor on hover */
+		}
+
+		.slider::-moz-range-thumb {
+			width: 25px; /* Set a specific slider handle width */
+			height: 25px; /* Slider handle height */
+			border-radius: 50%;
+			background: #000; /* Green background */
+			cursor: pointer; /* Cursor on hover */
 		}
 	</style>
 </head>
@@ -80,26 +106,26 @@
 <h3>Ellipsoidal Transverse Mercator Projection</h3>
 
 <div>
-	<div id="sliderLon0" class="slider">
-		<div id="knobLon0" class="knob"></div>
+	<div class="slidecontainer">
+		<input type="range" min="-360" max="360" value="0" class="slider" id="rangeLon0">
 	</div>
 	lon0=<span id="txtLon0"></span> (central meridian)
 </div>
 <div>
-	<div id="sliderK0" class="slider">
-		<div id="knobK0" class="knob"></div>
+	<div class="slidecontainer">
+		<input type="range" min="0" max="1000" value="100" class="slider" id="rangeK0">
 	</div>
 	k0=<span id="txtK0"></span> (scale on the central meridian)
 </div>
 <div>
-	<div id="sliderA" class="slider">
-		<div id="knobA" class="knob"></div>
+	<div class="slidecontainer">
+		<input type="range" min="0" max="7000000" value="6378137" class="slider" id="rangeA">
 	</div>
 	a=<span id="txtA"></span> (the ellipsoid via the equatorial radius)
 </div>
 <div>
-	<div id="sliderF" class="slider">
-		<div id="knobF" class="knob"></div>
+	<div class="slidecontainer">
+		<input type="range" min="0" max="999" value="1" class="slider" id="rangeF">
 	</div>
 	f=<span id="txtF"></span> (the ellipsoid via the equatorial flattening)
 </div>
@@ -251,72 +277,44 @@
 		/*
 		 * Sliders
 		 */
-		const sliderLon0 = new Slider("sliderLon0", "knobLon0", {
-			range: [-360, +360],
-			wheel: false,
-			snap: true,
-			onTick: function (pos) {
-				this.knob.setStyle(this.property, pos);
-			},
-			onChange: function (step) {
-				document.id("txtLon0").set("text", step)
-				tmLon0 = step;
-				if (tm)
-					draw(ctx, tm, tmLon0, width, height, rawData);
+		const sliderLon0 = document.getElementById("rangeLon0");
+		sliderLon0.oninput = function () {
+			tmLon0 = parseFloat(this.value);
+			document.id("txtLon0").set("text", tmLon0)
+			if (tm)
+				draw(ctx, tm, tmLon0, width, height, rawData);
+		}
+		const sliderK0 = document.getElementById("rangeK0");
+		sliderK0.oninput = function () {
+			tmK0 = parseFloat(this.value)/100; // scaled by 1000
+			document.id("txtK0").set("text", tmK0)
+			if (tm) {
+				tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
+				draw(ctx, tm, tmLon0, width, height, rawData);
 			}
-		});
-		const sliderK0 = new Slider("sliderK0", "knobK0", {
-			range: [0, 10],
-			wheel: false,
-			snap: true,
-			onTick: function (pos) {
-				this.knob.setStyle(this.property, pos);
-			},
-			onChange: function (step) {
-				document.id("txtK0").set("text", step)
-				tmK0 = step;
-				if (tm) {
-					tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
-					draw(ctx, tm, tmLon0, width, height, rawData);
-				}
+		}
+		const sliderA = document.getElementById("rangeA");
+		sliderA.oninput = function () {
+			tmA = parseFloat(this.value);
+			document.id("txtA").set("text", tmA)
+			if (tm) {
+				tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
+				draw(ctx, tm, tmLon0, width, height, rawData);
 			}
-		});
-		const sliderA = new Slider("sliderA", "knobA", {
-			range: [0, 7000000],
-			wheel: false,
-			snap: false,
-			onTick: function (pos) {
-				this.knob.setStyle(this.property, pos);
-			},
-			onChange: function (step) {
-				document.id("txtA").set("text", step)
-				tmA = step;
-				if (tm) {
-					tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
-					draw(ctx, tm, tmLon0, width, height, rawData);
-				}
+		}
+		const sliderF = document.getElementById("rangeF");
+		sliderF.oninput = function () {
+			tmF = parseFloat(this.value)/2000; // scaled by 1000
+			document.id("txtF").set("text", tmF)
+			if (tm) {
+				tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
+				draw(ctx, tm, tmLon0, width, height, rawData);
 			}
-		});
-		const sliderF = new Slider("sliderF", "knobF", {
-			range: [0, 0.5],
-			wheel: false,
-			snap: false,
-			onTick: function (pos) {
-				this.knob.setStyle(this.property, pos);
-			},
-			onChange: function (step) {
-				document.id("txtF").set("text", step)
-				tmF = step;
-				if (tm) {
-					tm = new module.exports.TransverseMercator(tmK0, tmA, tmF);
-					draw(ctx, tm, tmLon0, width, height, rawData);
-				}
-			}
-		});
-		sliderLon0.set(tmLon0);
-		sliderK0.set(tmK0);
-		sliderA.set(tmA);
-		sliderF.set(tmF);
+		}
+		sliderLon0.value = tmLon0;
+		sliderK0.value = tmK0 * 100; // scaled by 1000
+		sliderA.value = tmA;
+		sliderF.value = tmF * 2000; // scaled by 1000
 
 		// create the converter *AFTER* sliders have initialised
 		tm = new module.exports.TransverseMercator();

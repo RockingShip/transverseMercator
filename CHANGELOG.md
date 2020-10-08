@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ```
+2020-10-08 01:47:18 Replaced Mootools slider with native.
 2020-10-08 00:47:10 Add `.nojekyll` for GitHub-pages.
 2020-10-07 22:08:37 Added `preview.html`.
 2020-10-06 02:05:26 Initial commit.
