@@ -1,0 +1,13 @@
+navbar_entries:
+  - title: "showcase"
+    url: https://rockingship.github.io
+
+  - title: "transverseMercator@github"
+    url: https://github.com/RockingShip/transverseMercator
+
+footer_entries:
+  - title: "showcase"
+    url: https://rockingship.github.io
+
+  - title: "transverseMercator@github"
+    url: https://github.com/RockingShip/transverseMercator

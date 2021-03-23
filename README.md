@@ -1,41 +1,55 @@
-# Welcome to Ellipsoidal Transverse Mercator Projection (Javascript)
+---
+layout: home
+title: "transverseMercator - Ellipsoidal Transverse Mercator Projection (Javascript)"
+image: assets/favimage-840x472.jpg
+---
+
+### Work-In-Progress
+
+![transverseMercator-480x480@15.gif](transverseMercator-480x480%4015.gif)
+
+# transverseMercator
+
+Ellipsoidal Transverse Mercator Projection (Javascript)
+
+### Welcome to the Wonderful World of geospatial visualisation
 
 The nicest about this projection is that Antarctica is correct in proportions. And unlike UTM, it is has no zones.
 
 ![Elliptic Transverse Mercator](transverseMercator-480x480@15.gif)
 
-This project is a Javascript port of [TransverseMercatorProj](https://geographiclib.sourceforge.io/html/TransverseMercatorProj.1.html) from the [`geographiclib`](https://geographiclib.sourceforge.io) (https://geographiclib.sourceforge.io) project.
+This project also contains a javascript port of [TransverseMercatorProj](https://geographiclib.sourceforge.io/html/TransverseMercatorProj.1.html) from the [`geographiclib`](https://geographiclib.sourceforge.io) (https://geographiclib.sourceforge.io) project.
 Originally created by Charles Karney.
 
 ## Installation
 
-```bash
-$ npm install transverseMercator
+```sh
+  npm install transverseMercator
 ```
 
 ## Example
 
 ```javascript
-const nodeTM = require("transverseMercator");
-const tm = new nodeTM.TransverseMercator();
+  const nodeTM = require("transverseMercator");
+  const tm = new nodeTM.TransverseMercator();
 
-const retXY = tm.toXY(42, 42);
-console.log(JSON.stringify(retXY));
+  const retXY = tm.toXY(42, 42);
+  console.log(JSON.stringify(retXY));
 
-const retLatLon = tm.toLatLon(retXY.x, retXY.y);
-console.log(JSON.stringify(retLatLon));
+  const retLatLon = tm.toLatLon(retXY.x, retXY.y);
+  console.log(JSON.stringify(retLatLon));
 ```
 
 ## API
 
 See `geographiclib`'s [`manpage`](https://geographiclib.sourceforge.io/html/TransverseMercatorProj.1.html) for a detailed description.
 
-The default range of N/E coordinates are [-10e6,+10e6] and roughly [-26e6,+26e6] meters.
+The default range of N/E coordinates are \[-10e6,+10e6\] and roughly \[-26e6,+26e6\] meters.
 
 ### Constructor
 
 ```javascript
-new TransverseMercator([k0], [extend], [a], [f]) => instance
+  new TransverseMercator([k0], [extend], [a], [f]) => instance
 ```
 
 Returns a transverseMercator instance. Parameters:
@@ -53,7 +67,7 @@ Returns a transverseMercator instance. Parameters:
 Convert `lat/lon` in degrees to `E/N` coordinates in meters.
 
 ```javascript
-TransverseMercator.toXY(lat, lon, [lon0], [withGammaK]) => xy
+  TransverseMercator.toXY(lat, lon, [lon0], [withGammaK]) => xy
 ```
 
 parameters:
@@ -68,7 +82,7 @@ parameters:
 
 returns:
 
-```javascript
+```
 {
 	x: [Easting in meters],
 	y: [Northing in meters],
@@ -82,7 +96,7 @@ returns:
 Convert `E/N` coordinates in meters to `lat/lon` in degrees
 
 ```javascript
-TransverseMercator.toLatLon(x, y, [lon0]) => latLon
+  TransverseMercator.toLatLon(x, y, [lon0]) => latLon
 ```
 
 parameters:
@@ -95,7 +109,7 @@ parameters:
 
 returns:
 
-```javascript
+```
 {
 	lat: [Latitude in degrees],
 	y: [Longitude in degrees],
@@ -115,16 +129,24 @@ The original `TransverseMercatorProj` can serve about 240k conversions per secon
 
 Plenty, but all way within your level.
 
+## Source code
+
+Grab one of the tarballs at [https://github.com/xyzzy/smile/releases](https://github.com/RockingShip/transverseMercator/releases) or checkout the latest code:
+
+```sh
+  git clone https://github.com/xyzzy/smile.git
+```
+
 ## Versioning
 
-Using [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/xyzzy/transverseMercator/tags).
+Using [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/RockingShip/transverseMercator/tags).
 
 ## License
 
-This project is licensed under the ISC - see the [LICENSE-ISC](LICENSE-ISC) file for details.
+This project is licensed under the ISC - see the [LICENSE-ISC.txt](LICENSE-ISC.txt) file for details.
 
 The `GeographicLib` library is `MIT/X11` and compatible with this project.
 
-### Acknowledgments
+## Acknowledgments
 
 * Charles Karney and his amazing work on his GeographicLib library.
