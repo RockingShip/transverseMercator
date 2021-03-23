@@ -6,7 +6,7 @@ image: assets/favimage-840x472.jpg
 
 ### Work-In-Progress
 
-![transverseMercator-480x480@15.gif](transverseMercator-480x480%4015.gif)
+![teaser](transverseMercator-480x480%4015.gif)
 
 # transverseMercator
 
@@ -15,8 +15,6 @@ Ellipsoidal Transverse Mercator Projection (Javascript)
 ### Welcome to the Wonderful World of geospatial visualisation
 
 The nicest about this projection is that Antarctica is correct in proportions. And unlike UTM, it is has no zones.
-
-![Elliptic Transverse Mercator](transverseMercator-480x480@15.gif)
 
 This project also contains a javascript port of [TransverseMercatorProj](https://geographiclib.sourceforge.io/html/TransverseMercatorProj.1.html) from the [`geographiclib`](https://geographiclib.sourceforge.io) (https://geographiclib.sourceforge.io) project.
 Originally created by Charles Karney.

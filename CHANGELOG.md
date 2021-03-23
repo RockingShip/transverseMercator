@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ```
+2021-03-23 01:22:24 Fixed: Teaser.
 2021-03-23 01:07:15 Added: `moonwalk` theme.
 2020-10-08 01:47:18 Replaced Mootools slider with native.
 2020-10-08 00:47:10 Add `.nojekyll` for GitHub-pages.
