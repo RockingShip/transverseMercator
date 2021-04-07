@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Unreleased
 
 ```
+2021-04-07 20:45:18 Fixed: Location source code.
 2021-03-26 19:17:56 Added image to navbar.
 2021-03-23 01:22:24 Fixed: Teaser.
 2021-03-23 01:07:15 Added: `moonwalk` theme.

@@ -129,10 +129,10 @@ Plenty, but all way within your level.
 
 ## Source code
 
-Grab one of the tarballs at [https://github.com/xyzzy/smile/releases](https://github.com/RockingShip/transverseMercator/releases) or checkout the latest code:
+Grab one of the tarballs at [https://github.com/RockingShip/transverseMercator/releases](https://github.com/RockingShip/transverseMercator/releases) or checkout the latest code:
 
 ```sh
-  git clone https://github.com/xyzzy/smile.git
+  git clone https://github.com/RockingShip/transverseMercator.git
 ```
 
 ## Versioning
